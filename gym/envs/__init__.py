@@ -378,35 +378,23 @@ for game in ['air_raid', 'alien', 'amidar', 'assault', 'asterix', 'asteroids', '
 # Board games
 # ----------------------------------------
 
-register(
-    id='Go9x9-v0',
-    entry_point='gym.envs.board_game:GoEnv',
-    kwargs={
-        'player_color': 'black',
-        'opponent': 'pachi:uct:_2400',
-        'observation_type': 'image3c',
-        'illegal_move_mode': 'lose',
-        'board_size': 9,
-    },
-    # The pachi player seems not to be determistic given a fixed seed.
-    # (Reproduce by running 'import gym; h = gym.make('Go9x9-v0'); h.seed(1); h.reset(); h.step(15); h.step(16); h.step(17)' a few times.)
-    #
-    # This is probably due to a computation time limit.
-    nondeterministic=True,
-)
-
-register(
-    id='Go19x19-v0',
-    entry_point='gym.envs.board_game:GoEnv',
-    kwargs={
-        'player_color': 'black',
-        'opponent': 'pachi:uct:_2400',
-        'observation_type': 'image3c',
-        'illegal_move_mode': 'lose',
-        'board_size': 19,
-    },
-    nondeterministic=True,
-)
+for i in xrange(5,20):
+    register(
+        id='Go'+str(i)+'x'+str(i)+'-v0',
+        entry_point='gym.envs.board_game:GoEnv',
+        kwargs={
+            'player_color': 'black',
+            #'opponent': 'pachi:uct:_2400',
+            'observation_type': 'image3c',
+            'illegal_move_mode': 'lose',
+            'board_size': i,
+        },
+        # The pachi player seems not to be determistic given a fixed seed.
+        # (Reproduce by running 'import gym; h = gym.make('Go9x9-v0'); h.seed(1); h.reset(); h.step(15); h.step(16); h.step(17)' a few times.)
+        #
+        # This is probably due to a computation time limit.
+        nondeterministic=True,
+    )
 
 register(
     id='Hex9x9-v0',

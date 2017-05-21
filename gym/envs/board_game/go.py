@@ -124,7 +124,8 @@ class GoEnv(gym.Env):
     '''
     metadata = {"render.modes": ["human", "ansi"]}
 
-    def __init__(self, player_color, opponent, observation_type, illegal_move_mode, board_size):
+    def __init__(self, player_color, ##opponent, 
+                 observation_type, illegal_move_mode, board_size):
         """
         Args:
             player_color: Stone color for the agent. Either 'black' or 'white'
@@ -146,8 +147,8 @@ class GoEnv(gym.Env):
         except KeyError:
             raise error.Error("player_color must be 'black' or 'white', not {}".format(player_color))
 
-        self.opponent_policy = None
-        self.opponent = opponent
+        ##self.opponent_policy = None
+        ##self.opponent = opponent
 
         assert observation_type in ['image3c']
         self.observation_type = observation_type
@@ -180,21 +181,21 @@ class GoEnv(gym.Env):
         # (re-initialize) the opponent
         # necessary because a pachi engine is attached to a game via internal data in a board
         # so with a fresh game, we need a fresh engine
-        self._reset_opponent(self.state.board)
+        ##self._reset_opponent(self.state.board)
 
         # Let the opponent play if it's not the agent's turn
         opponent_resigned = False
-        if self.state.color != self.player_color:
-            self.state, opponent_resigned = self._exec_opponent_play(self.state, None, None)
+        ##if self.state.color != self.player_color:
+        ##    self.state, opponent_resigned = self._exec_opponent_play(self.state, None, None)
 
         # We should be back to the agent color
-        assert self.state.color == self.player_color
+        ##assert self.state.color == self.player_color
 
         self.done = self.state.board.is_terminal or opponent_resigned
         return self.state.board.encode()
 
     def _close(self):
-        self.opponent_policy = None
+        ##self.opponent_policy = None
         self.state = None
 
     def _render(self, mode="human", close=False):
@@ -205,7 +206,7 @@ class GoEnv(gym.Env):
         return outfile
 
     def _step(self, action):
-        assert self.state.color == self.player_color
+        ##assert self.state.color == self.player_color
 
         # If already terminal, then don't do anything
         if self.done:
@@ -231,15 +232,15 @@ class GoEnv(gym.Env):
                 raise error.Error('Unsupported illegal move action: {}'.format(self.illegal_move_mode))
 
         # Opponent play
-        if not self.state.board.is_terminal:
-            self.state, opponent_resigned = self._exec_opponent_play(self.state, prev_state, action)
-            # After opponent play, we should be back to the original color
-            assert self.state.color == self.player_color
-
-            # If the opponent resigns, then the agent wins
-            if opponent_resigned:
-                self.done = True
-                return self.state.board.encode(), 1., True, {'state': self.state}
+        #if not self.state.board.is_terminal:
+        #    self.state, opponent_resigned = self._exec_opponent_play(self.state, prev_state, action)
+        #    # After opponent play, we should be back to the original color
+        #    assert self.state.color == self.player_color
+        #
+        #    # If the opponent resigns, then the agent wins
+        #    if opponent_resigned:
+        #        self.done = True
+        #        return self.state.board.encode(), 1., True, {'state': self.state}
 
         # Reward: if nonterminal, then the reward is 0
         if not self.state.board.is_terminal:
