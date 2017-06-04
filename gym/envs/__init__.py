@@ -379,12 +379,33 @@ for game in ['air_raid', 'alien', 'amidar', 'assault', 'asterix', 'asteroids', '
 # ----------------------------------------
 
 for i in xrange(5,20):
+    pachi_play_id = 'Go'+str(i)+'x'+str(i)+'-v0'
+    self_play_id = 'SelfPlay' + pachi_play_id
+
+    # Register env for playing against pachi
     register(
-        id='Go'+str(i)+'x'+str(i)+'-v0',
+        id=pachi_play_id,
         entry_point='gym.envs.board_game:GoEnv',
         kwargs={
             'player_color': 'black',
-            #'opponent': 'pachi:uct:_2400',
+            'opponent': 'pachi:uct:_2400',
+            'observation_type': 'image3c',
+            'illegal_move_mode': 'lose',
+            'board_size': i,
+        },
+        # The pachi player seems not to be determistic given a fixed seed.
+        # (Reproduce by running 'import gym; h = gym.make('Go9x9-v0'); h.seed(1); h.reset(); h.step(15); h.step(16); h.step(17)' a few times.)
+        #
+        # This is probably due to a computation time limit.
+        nondeterministic=True,
+    )
+
+    # Register env for self play
+    register(
+        id=self_play_id,
+        entry_point='gym.envs.board_game:SelfPlayGoEnv',
+        kwargs={
+            'player_color': 'black',
             'observation_type': 'image3c',
             'illegal_move_mode': 'lose',
             'board_size': i,
